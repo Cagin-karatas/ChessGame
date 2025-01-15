@@ -276,3 +276,9 @@ div * {
   animation-duration: 100ms;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite; }
+
+#white-timer, #black-timer {
+    font-size: 20px;
+    text-align: center;
+    margin: 10px;
+}

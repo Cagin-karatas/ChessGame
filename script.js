@@ -719,8 +719,46 @@ let main = {
     }
   };
   
+  let whiteTime = 300; // 5 minutes in seconds
+  let blackTime = 300; // 5 minutes in seconds
+  let timerInterval;
+  let currentPlayer = 'w';
+
+  function startTimer() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+          if (currentPlayer === 'w') {
+              whiteTime--;
+              updateTimerDisplay(whiteTime, 'white-timer', "White");
+              if (whiteTime <= 0) {
+                  clearInterval(timerInterval);
+                  alert("White's time is up!");
+              }
+          } else {
+              blackTime--;
+              updateTimerDisplay(blackTime, 'black-timer', "Black");
+              if (blackTime <= 0) {
+                  clearInterval(timerInterval);
+                  alert("Black's time is up!");
+              }
+          }
+      }, 1000);
+  }
+
+  function updateTimerDisplay(time, elementId, player) {
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
+      document.getElementById(elementId).textContent = `${player}: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  }
+
+  function switchPlayer() {
+      currentPlayer = currentPlayer === 'w' ? 'b' : 'w';
+      startTimer();
+  }
+
   $(document).ready(function() {
     main.methods.gamesetup();
+    startTimer(); // Start the timer when the game is ready
   
     $('.gamecell').click(function(e) {
   
@@ -807,12 +845,14 @@ let main = {
           } else { // move selectedpiece
             main.methods.move(target);
             main.methods.endturn();
+            switchPlayer(); // Switch player after a valid move
           }
     
         } else { // else if selecedpiece.name is not white/black king than move
   
           main.methods.move(target);
           main.methods.endturn();
+          switchPlayer(); // Switch player after a valid move
   
         }
   
@@ -820,6 +860,7 @@ let main = {
         
         main.methods.capture(target);
         main.methods.endturn();
+        switchPlayer(); // Switch player after a valid capture
   
       } else if (main.variables.selectedpiece != '' && target.name != 'null' && target.id != selectedpiece.id && selectedpiece.name.slice(0,1) == target.name.slice(0,1)) { // toggle move options
   
