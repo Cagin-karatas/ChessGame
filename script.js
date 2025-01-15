@@ -746,10 +746,9 @@ let main = {
         main.variables.selectedpiece = e.target.id;
         main.methods.moveoptions($(this).attr('chess'));
   
-      } else if (main.variables.selectedpiece !='' && target.name == 'null') { // move selected piece piece
+      } else if (main.variables.selectedpiece != '' && target.name == 'null' && main.variables.highlighted.includes(target.id)) { // move selected piece
   
-        if (selectedpiece.name == 'w_king' || selectedpiece.name == 'b_king'){
-          
+        if (selectedpiece.name == 'w_king' || selectedpiece.name == 'b_king') {
           let t0 = (selectedpiece.name = 'w_king');
           let t1 = (selectedpiece.name = 'b_king');
           let t2 = (main.variables.pieces[selectedpiece.name].moved == false);
@@ -816,18 +815,13 @@ let main = {
           main.methods.endturn();
   
         }
-          
-      } else if (main.variables.selectedpiece !='' && target.name != 'null' && target.id != selectedpiece.id && selectedpiece.name.slice(0,1) != target.name.slice(0,1)){ // capture a piece
-        
-        if (selectedpiece.id != target.id && main.variables.highlighted.indexOf(target.id) != (-1)) { // if it's not trying to capture pieces not in its movement range
-          
-          // capture
-          main.methods.capture(target)
-          main.methods.endturn();
-          
-        }
   
-      } else if (main.variables.selectedpiece !='' && target.name != 'null' && target.id != selectedpiece.id && selectedpiece.name.slice(0,1) == target.name.slice(0,1)){ // toggle move options
+      } else if (main.variables.selectedpiece != '' && target.name != 'null' && target.id != selectedpiece.id && selectedpiece.name.slice(0,1) != target.name.slice(0,1) && main.variables.highlighted.includes(target.id)) { // capture a piece
+        
+        main.methods.capture(target);
+        main.methods.endturn();
+  
+      } else if (main.variables.selectedpiece != '' && target.name != 'null' && target.id != selectedpiece.id && selectedpiece.name.slice(0,1) == target.name.slice(0,1)) { // toggle move options
   
         // toggle
         main.methods.togglehighlight(main.variables.highlighted);
