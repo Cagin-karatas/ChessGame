@@ -289,11 +289,6 @@ let main = {
               return (parseInt(position.x) + parseInt(val.x)) + '_' + (parseInt(position.y) + parseInt(val.y));
             });
           }
-          /*
-            coordinates = [{ x: 1, y: 1 },{ x: 1, y: 0 },{ x: 1, y: -1 },{ x: 0, y: -1 },{ x: -1, y: -1 },{ x: -1, y: 0 },{ x: -1, y: 1 },{ x: 0, y: 1 }].map(function(val){
-              return (parseInt(position.x) + parseInt(val.x)) + '_' + (parseInt(position.y) + parseInt(val.y));
-            });
-          */
             options = (main.methods.options(startpoint, coordinates, main.variables.pieces[selectedpiece].type)).slice(0);
             main.variables.highlighted = options.slice(0);
             main.methods.togglehighlight(options);
@@ -628,26 +623,92 @@ let main = {
           id: main.variables.selectedpiece
         };
   
-        
-          //new cell
-          $('#' + target.id).html(main.variables.pieces[selectedpiece.name].img);
-          $('#' + target.id).attr('chess',selectedpiece.name);
-          //old cell
-          $('#' + selectedpiece.id).html('');
-          $('#' + selectedpiece.id).attr('chess','null');
-          //moved piece
-          main.variables.pieces[selectedpiece.name].position = target.id;
-          main.variables.pieces[selectedpiece.name].moved = true;
-          // captured piece
-          main.variables.pieces[target.name].captured = true;
-          /*
-          // toggle highlighted coordinates
-          main.methods.togglehighlight(main.variables.highlighted);
-          main.variables.highlighted.length = 0;
-          // set the selected piece to '' again
-          main.variables.selectedpiece = '';
-          */
-        
+        // Check if the captured piece is a king
+        if (target.name === 'w_king' || target.name === 'b_king') {
+          let winner = target.name === 'w_king' ? 'Black' : 'White';
+          alert(winner + " wins!");
+          main.methods.resetGame(); // Call a method to reset the game
+          return;
+        }
+  
+        // New cell
+        $('#' + target.id).html(main.variables.pieces[selectedpiece.name].img);
+        $('#' + target.id).attr('chess', selectedpiece.name);
+        // Old cell
+        $('#' + selectedpiece.id).html('');
+        $('#' + selectedpiece.id).attr('chess', 'null');
+        // Moved piece
+        main.variables.pieces[selectedpiece.name].position = target.id;
+        main.variables.pieces[selectedpiece.name].moved = true;
+        // Captured piece
+        main.variables.pieces[target.name].captured = true;
+      },
+  
+      resetGame: function() {
+        // Clear all squares
+        $('.gamecell').html('');
+        $('.gamecell').attr('chess', 'null');
+
+        // Reset all pieces to their initial positions
+        const initialPositions = {
+            w_king: '5_1',
+            w_queen: '4_1',
+            w_bishop1: '3_1',
+            w_bishop2: '6_1',
+            w_knight1: '2_1',
+            w_knight2: '7_1',
+            w_rook1: '1_1',
+            w_rook2: '8_1',
+            w_pawn1: '1_2',
+            w_pawn2: '2_2',
+            w_pawn3: '3_2',
+            w_pawn4: '4_2',
+            w_pawn5: '5_2',
+            w_pawn6: '6_2',
+            w_pawn7: '7_2',
+            w_pawn8: '8_2',
+            b_king: '5_8',
+            b_queen: '4_8',
+            b_bishop1: '3_8',
+            b_bishop2: '6_8',
+            b_knight1: '2_8',
+            b_knight2: '7_8',
+            b_rook1: '1_8',
+            b_rook2: '8_8',
+            b_pawn1: '1_7',
+            b_pawn2: '2_7',
+            b_pawn3: '3_7',
+            b_pawn4: '4_7',
+            b_pawn5: '5_7',
+            b_pawn6: '6_7',
+            b_pawn7: '7_7',
+            b_pawn8: '8_7'
+        };
+
+        for (let piece in main.variables.pieces) {
+            main.variables.pieces[piece].captured = false;
+            main.variables.pieces[piece].moved = false;
+            main.variables.pieces[piece].position = initialPositions[piece];
+        }
+
+        // Ensure White starts the new game
+        main.variables.turn = 'w';
+        $('#turn').html("It's Whites Turn!");
+
+        // Reset timers
+        whiteTime = 300;
+        blackTime = 300;
+        updateTimerDisplay(whiteTime, 'white-timer', "White");
+        updateTimerDisplay(blackTime, 'black-timer', "Black");
+
+        // Clear highlighted squares
+        main.methods.togglehighlight(main.variables.highlighted);
+        main.variables.highlighted.length = 0;
+        main.variables.selectedpiece = '';
+
+        // Re-setup the game
+        main.methods.gamesetup();
+        startTimer();
       },
   
       move: function (target) {
